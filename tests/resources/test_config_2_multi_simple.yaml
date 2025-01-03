@@ -1,0 +1,15 @@
+set1:
+  program: firefox
+  start_time: 2300
+  end_time: 0900
+  rule: nudge
+set2:
+  program: chrome
+  start_time: 2300
+  end_time: 0900
+  rule: nudge
+set3:
+  program: wow
+  start_time: 2330
+  end_time: 0600
+  rule: nudge

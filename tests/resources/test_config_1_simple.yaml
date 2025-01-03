@@ -1,0 +1,5 @@
+set1:
+  program: firefox
+  start_time: 2300
+  end_time: 900
+  rule: nudge
