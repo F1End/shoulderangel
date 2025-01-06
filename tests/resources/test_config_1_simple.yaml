@@ -1,5 +1,5 @@
 set1:
   program: firefox
-  start_time: 2300
-  end_time: 900
+  start_time: "23:00"
+  end_time: "09:00"
   rule: nudge

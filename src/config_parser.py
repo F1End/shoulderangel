@@ -3,7 +3,9 @@
 
 Get config from file
 """
+from pathlib import Path
 from typing import Union
+
 import yaml
 
 
@@ -15,11 +17,22 @@ class Configs:
         self.configs = []
 
     def load_from_file(self):
-        raise NotImplemented
+        path = Path(self.raw_config)
+        with open(path, 'r') as file:
+            config_from_file = yaml.safe_load(file)
+            return config_from_file
 
-# method to parse yaml file OR dict to class config
+    # method to parse yaml file OR dict to class config
     def load_config(self):
-        raise NotImplemented
+        if isinstance(self.raw_config, str):
+            config_dict = self.load_from_file()
+        else:
+            config_dict = self.raw_config.copy()
+        print(config_dict)
+        for key,value_dict in config_dict.items():
+            print(value_dict)
+            self.configs.append(ConfigElement(value_dict).parse())
+
 
 # abstract each config group into a class for storage
 class ConfigElement:

@@ -1,14 +1,14 @@
 set1:
   program: firefox,chrome,edge
-  start_time: 2300
-  end_time: 0900
+  start_time: "23:00"
+  end_time: "09:00"
   rule: nudge
 set2:
   program: stellaris,wow
-  start_time: 2330
-  end_time: 0600
+  start_time: "23:30"
+  end_time: "06:00"
   rule: nudge
 set3:
   program: vlc,mediamonkey
-  start_time: 0000
-  end_time: 0600
+  start_time: "00:00"
+  end_time: "06:00"
