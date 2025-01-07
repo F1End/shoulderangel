@@ -1,11 +1,10 @@
 from unittest import TestCase, main
-from unittest.mock import MagicMock,patch
+from unittest.mock import patch
+from datetime import datetime
 
 from yaml import parser
 
 from src import config_parser
-
-
 
 
 class TestConfigParser(TestCase):
@@ -133,12 +132,15 @@ class TestConfigParser(TestCase):
             "start_time": "00:00",
             "end_time": "06:00"}
         }
-
         load_file_mock.return_value = mock_yaml_parsed
+
+        # call for case 1
         configs_instance.load_config()
+
         load_file_mock.assert_called_once()
         for key, config_value_dict in mock_yaml_parsed.items():
-            configelement_mock.assert_called_with(config_value_dict)
+            configelement_mock.assert_any_call(config_value_dict)
+        configelement_mock.parse.call_count == 3
 
         # Case 2: dict passed
         input2 = {"set1": {
@@ -147,16 +149,90 @@ class TestConfigParser(TestCase):
             "end_time": "09:00",
             "rule": "nudge"}}
         configs_instance.raw_config = input2
+
+        # call for case 2
         configs_instance.load_config()
+
         load_file_mock.assert_called_once()
+        configelement_mock.assert_called_with(input2["set1"])
 
 
 class TestConfigElement(TestCase):
     def test_init(self):
-        pass
+        input_dict = {
+            "program": "firefox",
+            "start_time": "23:00",
+            "end_time": "09:00",
+            "rule": "nudge"}
+        expected_program = []
+        expected_start, expected_end, expected_rule = None, None, None
 
-    def test_verify_time(self):
-        pass
+        test_element = config_parser.ConfigElement(input_dict)
+        self.assertEqual(test_element.raw_dict, input_dict)
+        self.assertEqual(test_element.program, expected_program)
+        self.assertEqual(test_element.start_time, expected_start)
+        self.assertEqual(test_element.end_time, expected_end)
+        self.assertEqual(test_element.rule, expected_rule)
+
+    def test_parse(self):
+        # Case 1: Single program entered
+        input_dict_1 = {
+            "program": "firefox",
+            "start_time": "23:00",
+            "end_time": "09:00",
+            "rule": "nudge"}
+        expected_program_1 = ["firefox"]
+        expected_start_1 = datetime.strptime(input_dict_1["start_time"], '%H:%M').time()
+        expected_end_1 = datetime.strptime(input_dict_1["end_time"], '%H:%M').time()
+        expected_rule_1 = input_dict_1["rule"]
+
+        test_element_1 = config_parser.ConfigElement(input_dict_1)
+        test_element_1.parse()
+
+        self.assertEqual(test_element_1.raw_dict, input_dict_1)
+        self.assertEqual(test_element_1.program, expected_program_1)
+        self.assertEqual(test_element_1.start_time, expected_start_1)
+        self.assertEqual(test_element_1.end_time, expected_end_1)
+        self.assertEqual(test_element_1.rule, expected_rule_1)
+
+        # Case 2: Multiple programs
+        input_dict_2 = {
+            "program": "firefox,chrome,edge",
+            "start_time": "23:00",
+            "end_time": "09:00",
+            "rule": "nudge"}
+        expected_program_2 = ["firefox", "chrome", "edge"]
+        expected_start_2 = datetime.strptime(input_dict_2["start_time"], '%H:%M').time()
+        expected_end_2 = datetime.strptime(input_dict_2["end_time"], '%H:%M').time()
+        expected_rule_2 = input_dict_2["rule"]
+
+        test_element_2 = config_parser.ConfigElement(input_dict_2)
+        test_element_2.parse()
+
+        self.assertEqual(test_element_2.raw_dict, input_dict_2)
+        self.assertEqual(test_element_2.program, expected_program_2)
+        self.assertEqual(test_element_2.start_time, expected_start_2)
+        self.assertEqual(test_element_2.end_time, expected_end_2)
+        self.assertEqual(test_element_2.rule, expected_rule_2)
+
+        # Case 3: Rule is not entered -> default to "nudge"
+        input_dict_3 = {
+            "program": "firefox",
+            "start_time": "23:00",
+            "end_time": "09:00"}
+        expected_program_3 = ["firefox"]
+        expected_start_3 = datetime.strptime(input_dict_3["start_time"], '%H:%M').time()
+        expected_end_3 = datetime.strptime(input_dict_3["end_time"], '%H:%M').time()
+        expected_rule_3 = "nudge"
+
+        test_element_3 = config_parser.ConfigElement(input_dict_3)
+        test_element_3.parse()
+
+        self.assertEqual(test_element_3.raw_dict, input_dict_3)
+        self.assertEqual(test_element_3.program, expected_program_3)
+        self.assertEqual(test_element_3.start_time, expected_start_3)
+        self.assertEqual(test_element_3.end_time, expected_end_3)
+        self.assertEqual(test_element_3.rule, expected_rule_3)
 
 
 if __name__ == '__main__':

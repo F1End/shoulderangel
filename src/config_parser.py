@@ -5,6 +5,7 @@ Get config from file
 """
 from pathlib import Path
 from typing import Union
+from datetime import datetime
 
 import yaml
 
@@ -28,28 +29,22 @@ class Configs:
             config_dict = self.load_from_file()
         else:
             config_dict = self.raw_config.copy()
-        print(config_dict)
-        for key,value_dict in config_dict.items():
-            print(value_dict)
+        for key, value_dict in config_dict.items():
             self.configs.append(ConfigElement(value_dict).parse())
 
 
 # abstract each config group into a class for storage
 class ConfigElement:
-    def __init__(self, program: str, start_time, end_time, rule: str = "nudge"):
-        self.program = program
-        self.start_time = start_time if self._verify_time(start_time)\
-            else Exception(f"Invalid start time: '{start_time}' for program(s) {program}")
-        self.end_time = end_time if self._verify_time(end_time)\
-            else Exception(f"Invalid end time: '{end_time}' for program(s) {program}")
-        self.rule = rule
+    def __init__(self, config_dict: dict):
+        self.raw_dict = config_dict
+        self.program = []
+        self.start_time = None
+        self.end_time = None
+        self.rule = None
 
-    @staticmethod
-    def _verify_time(time: int) -> bool:
-        """
-        Making sure that time is convertible to datetime,
-        to raise exception during loading bad config,
-        not when it gets called downstream
-        :return: bool
-        """
-        pass
+    def parse(self):
+        for prog in self.raw_dict["program"].split(","):
+            self.program.append(prog)
+        self.start_time = datetime.strptime(self.raw_dict["start_time"], '%H:%M').time()
+        self.end_time = datetime.strptime(self.raw_dict["end_time"], '%H:%M').time()
+        self.rule = self.raw_dict["rule"] if self.raw_dict.get("rule") else "nudge"
