@@ -4,6 +4,7 @@ from datetime import datetime
 
 from src import watch
 
+
 class TestWatch(TestCase):
 
     @patch('src.watch.wmi')
@@ -213,4 +214,3 @@ class TestWatch(TestCase):
 
 if __name__ == '__main__':
     main()
-

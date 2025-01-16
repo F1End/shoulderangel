@@ -2,8 +2,7 @@
 "I see thee and thy deeds..."
 Module that checks whether flagged applications run at specified hour
 """
-from time import sleep
-from datetime import datetime, timedelta
+from datetime import datetime
 import wmi
 
 from src.config_parser import ConfigElement
@@ -33,7 +32,6 @@ class Watcher():
             return (config.start_time < current_time < config.end_time)
         else:
             return (current_time < config.end_time or config.start_time < current_time)
-
 
     def check_running(self, programs: list[str]) -> list:
         tested_positive = []
