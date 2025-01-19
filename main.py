@@ -1,7 +1,7 @@
 from argparse import ArgumentParser
-from pathlib import Path
 
 from src import angel
+
 
 def parse_args():
     parser = ArgumentParser(description="Shoulder Angel")
@@ -14,6 +14,7 @@ def parse_args():
                              "'loop' -app will keep checking periodically\n")
     parser.add_argument("--check_interval", default="5",
                         help="Minutes between checks (applicable when looping)")
+
 
 if __name__ == "__main__":
     args = parse_args()
