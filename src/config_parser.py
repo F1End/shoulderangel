@@ -15,9 +15,9 @@ import yaml
 class Configs:
     def __init__(self, config: Union[dict, str]):
         self.raw_config = config
-        self.configs = []
+        self.rules = []
 
-    def load_from_file(self):
+    def load_from_file(self) -> dict:
         path = Path(self.raw_config)
         with open(path, 'r') as file:
             config_from_file = yaml.safe_load(file)
@@ -30,7 +30,10 @@ class Configs:
         else:
             config_dict = self.raw_config.copy()
         for key, value_dict in config_dict.items():
-            self.configs.append(ConfigElement(value_dict).parse())
+            self.rules.append(ConfigElement(value_dict).parse())
+
+    def __call__(self):
+        return self.rules
 
 
 # abstract each config group into a class for storage

@@ -14,14 +14,14 @@ class TestConfigParser(TestCase):
         test_configs = config_parser.Configs(input_path)
         default_configs = []
         self.assertEqual(test_configs.raw_config, input_path)
-        self.assertEqual(test_configs.configs, default_configs)
+        self.assertEqual(test_configs.rules, default_configs)
 
         # Case 2: Configs is called with dict input
         input_dict = {"program": "firefox", "start_time": "2200", "end_time": "0800", "rule": "Nudge"}
         test_configs2 = config_parser.Configs(input_dict)
         default_configs
         self.assertEqual(test_configs2.raw_config, input_dict)
-        self.assertEqual(test_configs2.configs, default_configs)
+        self.assertEqual(test_configs2.rules, default_configs)
 
         # Case 3: Called without input and fails
         self.assertRaises(TypeError, config_parser.Configs)
@@ -155,6 +155,21 @@ class TestConfigParser(TestCase):
 
         load_file_mock.assert_called_once()
         configelement_mock.assert_called_with(input2["set1"])
+
+    def test__call__(self):
+        input_path = "some/path/to/config.yaml"
+        test_ruleset = [{"set1": {
+            "program": "firefox",
+            "start_time": "23:00",
+            "end_time": "09:00",
+            "rule": "nudge"}}]
+        expected = test_ruleset
+
+        test_configs = config_parser.Configs(input_path)
+        test_configs.rules = test_ruleset
+        called = test_configs()
+        self.assertEqual(called, expected)
+
 
 
 class TestConfigElement(TestCase):
