@@ -163,7 +163,7 @@ class TestAngel(TestCase):
             with patch.object(self.test_angel, 'alarm_action') as alarm_action_mock:
                 self.test_angel.check_and_action()
                 config_checks_mock.assert_called_once()
-                alarm_action_mock.assert_called_with(["firefox"], start_time, end_time)
+                alarm_action_mock.assert_called_with(["firefox"], config_mock)
 
         # Case 3: multiple positive checks
         with patch.object(self.test_angel, 'run_config_checks') as config_checks_mock:
@@ -183,19 +183,18 @@ class TestAngel(TestCase):
             with patch.object(self.test_angel, 'alarm_action') as alarm_action_mock:
                 self.test_angel.check_and_action()
                 config_checks_mock.assert_called_once()
-                alarm_action_mock.assert_any_call(["firefox"], start_time, end_time)
-                alarm_action_mock.assert_any_call(["Edge", "Spotify"], start_time_2, end_time_2)
+                alarm_action_mock.assert_any_call(["firefox"], config_mock)
+                alarm_action_mock.assert_any_call(["Edge", "Spotify"], config_mock_2)
 
     @patch('src.angel.sleep')
     def test_run(self, mock_sleep):
         # Case 1: Single run
-        expected_sleep_length = self.test_angel.check_interval * 60 # default is 5 * 60 -> 300
         with patch.object(self.test_angel, 'check_and_action') as check_and_action_mock:
             with patch.object(self.test_angel, 'check_run_rules') as check_run_rules_mock:
                 check_run_rules_mock.return_value = False
 
                 self.test_angel.run()
-                mock_sleep.assert_called_with(expected_sleep_length)
+                mock_sleep.assert_not_called()
                 check_and_action_mock.assert_called_once()
                 check_run_rules_mock.assert_called_once()
 
@@ -208,7 +207,7 @@ class TestAngel(TestCase):
 
                 self.test_angel.run()
                 mock_sleep.assert_called_with(expected_sleep_length)
-                self.assertEqual(mock_sleep.call_count, 7) # one larger as already called in Case 1
+                self.assertEqual(mock_sleep.call_count, 5)
                 self.assertEqual(check_and_action_mock.call_count, 6)
                 self.assertEqual(check_run_rules_mock.call_count, 6)
 

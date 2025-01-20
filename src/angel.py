@@ -10,12 +10,12 @@ This module should be fully independent of OS.
 """
 from argparse import ArgumentParser
 from time import sleep
+from pathlib import Path
 
 from src import config_parser, nudge, watch
 
-# Abstratct all into a central class
-class Angel:
 
+class Angel:
     def __init__(self, args: ArgumentParser):
         self.config_path = args.config_path
         self.run_rule = args.run_rule
@@ -51,13 +51,15 @@ class Angel:
         if positive_check_outcomes:
             for actionable in positive_check_outcomes:
                 self.alarm_action(actionable[0],
-                                  actionable[1].start_time,
-                                  actionable[1].end_time)
+                                  actionable[1])
 
     def run(self):
+        self.configs.load_config()
+
         keep_running = True
         while keep_running:
             self.check_and_action()
 
-            sleep(self.check_interval * 60)
             keep_running = self.check_run_rules()
+            if keep_running:
+                sleep(self.check_interval * 60)
