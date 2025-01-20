@@ -12,10 +12,14 @@ def parse_args():
                              "Options:\n"
                              "'single' -app will quit after one check\n"
                              "'loop' -app will keep checking periodically\n")
-    parser.add_argument("--check_interval", default="5",
+    parser.add_argument("--check_interval", default=5,
                         help="Minutes between checks (applicable when looping)")
+
+    args = parser.parse_args()
+
+    return args
 
 
 if __name__ == "__main__":
     args = parse_args()
-    angel.ShoulderAngel(args)
+    angel.Angel(args).run()
