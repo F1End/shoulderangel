@@ -7,10 +7,10 @@ from src import watch
 
 class TestWatch(TestCase):
 
-    @patch('src.watch.wmi')
-    def test_watcher_init(self, wmi_mock):
+    @patch('src.watch.system')
+    def test_watcher_init(self, system_mock):
         test_instance = watch.Watcher()
-        wmi_mock.WMI.assert_any_call()
+        system_mock.assert_called_once()
 
     @patch('src.watch.Watcher.check_time')
     @patch('src.watch.Watcher.check_running')
@@ -35,7 +35,7 @@ class TestWatch(TestCase):
 
     @patch('src.watch.datetime')
     def test_check_time(self, datetime_mock):
-        initiated_wmi = watch.Watcher()
+        initiated_watcher = watch.Watcher()
 
         # Case 1: Start and end time on same day, True
         start_time_1 = datetime.strptime("11:00", '%H:%M').time()
@@ -46,10 +46,10 @@ class TestWatch(TestCase):
         configmock_1.end_time = end_time_1
 
         current_time_1 = datetime.strptime("13:35", '%H:%M').time()
-        datetime_mock.now().strftime().time.return_value = current_time_1
+        datetime_mock.now().time.return_value = current_time_1
         expected_1 = True
 
-        checked_1 = initiated_wmi.check_time(configmock_1)
+        checked_1 = initiated_watcher.check_time(configmock_1)
         self.assertEqual(expected_1, checked_1)
 
         # Case 2: Start and end time on same day, False
@@ -61,10 +61,10 @@ class TestWatch(TestCase):
         configmock_2.end_time = end_time_2
 
         current_time_2 = datetime.strptime("18:35", '%H:%M').time()
-        datetime_mock.now().strftime().time.return_value = current_time_2
+        datetime_mock.now().time.return_value = current_time_2
         expected_2 = False
 
-        checked_2 = initiated_wmi.check_time(configmock_2)
+        checked_2 = initiated_watcher.check_time(configmock_2)
         self.assertEqual(expected_2, checked_2)
 
         # Case 3: End time slides to next day, True, now() before midnight
@@ -76,10 +76,10 @@ class TestWatch(TestCase):
         configmock_3.end_time = end_time_3
 
         current_time_3 = datetime.strptime("21:35", '%H:%M').time()
-        datetime_mock.now().strftime().time.return_value = current_time_3
+        datetime_mock.now().time.return_value = current_time_3
         expected_3 = True
 
-        checked_3 = initiated_wmi.check_time(configmock_3)
+        checked_3 = initiated_watcher.check_time(configmock_3)
         self.assertEqual(expected_3, checked_3)
 
         # Case 4: End time slides to next day, True, now() after midnight
@@ -91,10 +91,10 @@ class TestWatch(TestCase):
         configmock_4.end_time = end_time_4
 
         current_time_4 = datetime.strptime("06:35", '%H:%M').time()
-        datetime_mock.now().strftime().time.return_value = current_time_4
+        datetime_mock.now().time.return_value = current_time_4
         expected_4 = True
 
-        checked_4 = initiated_wmi.check_time(configmock_4)
+        checked_4 = initiated_watcher.check_time(configmock_4)
         self.assertEqual(expected_4, checked_4)
 
         # Case 5: End time slides to next day, False
@@ -106,17 +106,15 @@ class TestWatch(TestCase):
         configmock_5.end_time = end_time_5
 
         current_time_5 = datetime.strptime("09:35", '%H:%M').time()
-        datetime_mock.now().strftime().time.return_value = current_time_5
+        datetime_mock.now().time.return_value = current_time_5
         expected_5 = False
 
-        checked_5 = initiated_wmi.check_time(configmock_5)
+        checked_5 = initiated_watcher.check_time(configmock_5)
         self.assertEqual(expected_5, checked_5)
 
-    @patch('src.watch.wmi')
-    def test_check_running(self, wmi_mock):
+    @patch('src.watch.psutil')
+    def test_check_running(self, psutil_mock):
         # setup
-        initiated_wmi = MagicMock()
-        wmi_mock.WMI.return_value = initiated_wmi
         test_instance = watch.Watcher()
 
         # Case 1: single program, running
@@ -128,9 +126,9 @@ class TestWatch(TestCase):
         running_mocks_1 = []
         for name in running_1:
             mock = MagicMock()
-            mock.Name = name
+            mock.info = {'name': name}
             running_mocks_1.append(mock)
-        initiated_wmi.Win32_Process.return_value = running_mocks_1
+        psutil_mock.process_iter.return_value = running_mocks_1
         found_1 = test_instance.check_running(programs_1)
         self.assertEqual(found_1, expected_1)
 
@@ -143,9 +141,9 @@ class TestWatch(TestCase):
         running_mocks_2 = []
         for name in running_2:
             mock = MagicMock()
-            mock.Name = name
+            mock.info = {'name': name}
             running_mocks_2.append(mock)
-        initiated_wmi.Win32_Process.return_value = running_mocks_2
+        psutil_mock.process_iter.return_value = running_mocks_2
         found_2 = test_instance.check_running(programs_2)
         self.assertEqual(found_2, expected_2)
 
@@ -159,9 +157,9 @@ class TestWatch(TestCase):
         running_mocks_3 = []
         for name in running_3:
             mock = MagicMock()
-            mock.Name = name
+            mock.info = {'name': name}
             running_mocks_3.append(mock)
-        initiated_wmi.Win32_Process.return_value = running_mocks_3
+        psutil_mock.process_iter.return_value = running_mocks_3
         found_3 = test_instance.check_running(programs_3)
         self.assertEqual(found_3, expected_3)
 
@@ -175,9 +173,9 @@ class TestWatch(TestCase):
         running_mocks_4 = []
         for name in running_4:
             mock = MagicMock()
-            mock.Name = name
+            mock.info = {'name': name}
             running_mocks_4.append(mock)
-        initiated_wmi.Win32_Process.return_value = running_mocks_4
+        psutil_mock.process_iter.return_value = running_mocks_4
         found_4 = test_instance.check_running(programs_4)
         self.assertEqual(found_4, expected_4)
 
@@ -190,9 +188,9 @@ class TestWatch(TestCase):
         running_mocks_5 = []
         for name in running_5:
             mock = MagicMock()
-            mock.Name = name
+            mock.info = {'name': name}
             running_mocks_5.append(mock)
-        initiated_wmi.Win32_Process.return_value = running_mocks_5
+        psutil_mock.process_iter.return_value = running_mocks_5
         found_5 = test_instance.check_running(programs_5)
         self.assertEqual(found_5, expected_5)
 
@@ -205,9 +203,9 @@ class TestWatch(TestCase):
         running_mocks_6 = []
         for name in running_6:
             mock = MagicMock()
-            mock.Name = name
+            mock.info = {'name': name}
             running_mocks_6.append(mock)
-        initiated_wmi.Win32_Process.return_value = running_mocks_6
+        psutil_mock.process_iter.return_value = running_mocks_6
         found_6 = test_instance.check_running(programs_6)
         self.assertEqual(found_6, expected_6)
 
