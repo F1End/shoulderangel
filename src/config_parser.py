@@ -6,6 +6,7 @@ Get config from file
 from pathlib import Path
 from typing import Union
 from datetime import datetime
+from typing import Self
 
 import yaml
 
@@ -30,7 +31,8 @@ class Configs:
         else:
             config_dict = self.raw_config.copy()
         for key, value_dict in config_dict.items():
-            self.rules.append(ConfigElement(value_dict).parse())
+            config_element = ConfigElement(value_dict).parse()
+            self.rules.append(config_element)
 
     def __call__(self):
         return self.rules
@@ -45,9 +47,14 @@ class ConfigElement:
         self.end_time = None
         self.rule = None
 
-    def parse(self):
+    def parse(self) -> Self:
         for prog in self.raw_dict["program"].split(","):
             self.program.append(prog)
         self.start_time = datetime.strptime(self.raw_dict["start_time"], '%H:%M').time()
         self.end_time = datetime.strptime(self.raw_dict["end_time"], '%H:%M').time()
         self.rule = self.raw_dict["rule"] if self.raw_dict.get("rule") else "nudge"
+
+        return self
+
+    def __str__(self):
+        return str(f"ConfigElement {self.raw_dict}")

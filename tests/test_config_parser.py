@@ -171,7 +171,6 @@ class TestConfigParser(TestCase):
         self.assertEqual(called, expected)
 
 
-
 class TestConfigElement(TestCase):
     def test_init(self):
         input_dict = {
