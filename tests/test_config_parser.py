@@ -1,6 +1,7 @@
 from unittest import TestCase, main
 from unittest.mock import patch
 from datetime import datetime
+import os
 
 from yaml import parser
 
@@ -30,8 +31,11 @@ class TestConfigParser(TestCase):
         # Creating instance
         configs_instance = config_parser.Configs("Some-path")
 
+        #if root is not /tests, need to modify file path
+        path_extension = "" if os.path.basename(os.getcwd()) == "tests" else "tests/"
+
         # Case 1: Simple config of one program
-        file_path1 = "resources/test_config_1_simple.yaml"
+        file_path1 = f"{path_extension}resources/test_config_1_simple.yaml"
         configs_instance.raw_config = file_path1
         expected = {"set1": {
             "program": "firefox",
@@ -43,7 +47,7 @@ class TestConfigParser(TestCase):
         self.assertEqual(expected, output)
 
         # Case 2: Multiple simple configs
-        file_path2 = "resources\\test_config_2_multi_simple.yaml"
+        file_path2 = f"{path_extension}resources/test_config_2_multi_simple.yaml"
         configs_instance.raw_config = file_path2
         expected = {"set1": {
             "program": "firefox",
@@ -65,7 +69,7 @@ class TestConfigParser(TestCase):
         self.assertEqual(expected, output)
 
         # Case 3: Complex config (multiple programs)
-        file_path3 = "resources/test_config_3_complex.yaml"
+        file_path3 = f"{path_extension}resources/test_config_3_complex.yaml"
         configs_instance.raw_config = file_path3
         expected = {"set1": {
             "program": "firefox,chrome,wow",
@@ -76,7 +80,7 @@ class TestConfigParser(TestCase):
         self.assertEqual(expected, output)
 
         # Case 4: Multiple complex configs, including defaulting value
-        file_path4 = "resources/test_config_4_multi_complex.yaml"
+        file_path4 = f"{path_extension}resources/test_config_4_multi_complex.yaml"
         configs_instance.raw_config = file_path4
         expected = {"set1": {
             "program": "firefox,chrome,edge",
@@ -97,13 +101,13 @@ class TestConfigParser(TestCase):
         self.assertEqual(expected, output)
 
         # Case 5: Invalid file
-        file_path5 = "resources/test_config_5_invalid_file.yaml"
+        file_path5 = f"{path_extension}resources/test_config_5_invalid_file.yaml"
         configs_instance.raw_config = file_path5
         with self.assertRaises(parser.ParserError):
             configs_instance.load_from_file()
 
         # Case 6: Invalid path
-        file_path6 = "resources/test_config_nothinghere.yaml"
+        file_path6 = f"{path_extension}resources/test_config_nothinghere.yaml"
         configs_instance.raw_config = file_path6
         with self.assertRaises(FileNotFoundError):
             configs_instance.load_from_file()
