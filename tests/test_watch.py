@@ -1,6 +1,7 @@
 from unittest import TestCase, main
 from unittest.mock import patch, MagicMock
 from datetime import datetime
+from platform import system
 
 from src import watch
 
@@ -116,12 +117,13 @@ class TestWatch(TestCase):
     def test_check_running(self, psutil_mock):
         # setup
         test_instance = watch.Watcher()
+        windows_extension = ".exe" if system() == "Windows" else ""
 
         # Case 1: single program, running
         programs_1 = ["firefox"]
-        running_1 = ["firefox.exe", "unsecapp.exe",
-                     "NisSrv.exe", "svchost.exe",
-                     "aw-qt.exe", "HotkeyMonitor.exe"]
+        running_1 = [f"firefox{windows_extension}", f"unsecapp{windows_extension}",
+                     f"NisSrv{windows_extension}", f"svchost{windows_extension}",
+                     f"aw-qt{windows_extension}", f"HotkeyMonitor{windows_extension}"]
         expected_1 = ["firefox"]
         running_mocks_1 = []
         for name in running_1:
@@ -134,9 +136,9 @@ class TestWatch(TestCase):
 
         # Case 2: single program, not running
         programs_2 = ["firefox"]
-        running_2 = ["unsecapp.exe",
-                     "NisSrv.exe", "svchost.exe",
-                     "aw-qt.exe", "HotkeyMonitor.exe"]
+        running_2 = [f"unsecapp{windows_extension}",
+                     f"NisSrv{windows_extension}", f"svchost{windows_extension}",
+                     f"aw-qt{windows_extension}", f"HotkeyMonitor{windows_extension}"]
         expected_2 = []
         running_mocks_2 = []
         for name in running_2:
@@ -149,10 +151,10 @@ class TestWatch(TestCase):
 
         # Case 3: multiple programs, all running
         programs_3 = ["firefox", "chrome", "spotify"]
-        running_3 = ["firefox.exe", "unsecapp.exe",
-                     "NisSrv.exe", "svchost.exe",
-                     "aw-qt.exe", "HotkeyMonitor.exe",
-                     "Spotify.exe", "chrome.exe"]
+        running_3 = [f"firefox{windows_extension}", f"unsecapp{windows_extension}",
+                     f"NisSrv{windows_extension}", f"svchost{windows_extension}",
+                     f"aw-qt{windows_extension}", f"HotkeyMonitor{windows_extension}",
+                     f"Spotify{windows_extension}", f"chrome{windows_extension}"]
         expected_3 = ["firefox", "chrome", "spotify"]
         running_mocks_3 = []
         for name in running_3:
@@ -165,10 +167,10 @@ class TestWatch(TestCase):
 
         # Case 4: multiple programs, some running, uppercase val included
         programs_4 = ["firefox", "cHrome", "spotify"]
-        running_4 = ["firefox.exe", "unsecapp.exe",
-                     "NisSrv.exe", "svchost.exe",
-                     "aw-qt.exe", "HotkeyMonitor.exe",
-                     "Spotify.exe"]
+        running_4 = [f"firefox{windows_extension}", f"unsecapp{windows_extension}",
+                     f"NisSrv{windows_extension}", f"svchost{windows_extension}",
+                     f"aw-qt{windows_extension}", f"HotkeyMonitor{windows_extension}",
+                     f"Spotify{windows_extension}"]
         expected_4 = ["firefox", "spotify"]
         running_mocks_4 = []
         for name in running_4:
@@ -181,9 +183,9 @@ class TestWatch(TestCase):
 
         # Case 5: multiple programs, one running
         programs_5 = ["firefox", "chrome", "spotify"]
-        running_5 = ["firefox.exe", "unsecapp.exe",
-                     "NisSrv.exe", "svchost.exe",
-                     "aw-qt.exe", "HotkeyMonitor.exe"]
+        running_5 = [f"firefox{windows_extension}", f"unsecapp{windows_extension}",
+                     f"NisSrv{windows_extension}", f"svchost{windows_extension}",
+                     f"aw-qt{windows_extension}", f"HotkeyMonitor{windows_extension}"]
         expected_5 = ["firefox"]
         running_mocks_5 = []
         for name in running_5:
@@ -196,9 +198,9 @@ class TestWatch(TestCase):
 
         # Case 6: multiple programs, none running
         programs_6 = ["firefox", "chrome", "spotify"]
-        running_6 = ["unsecapp.exe",
-                     "NisSrv.exe", "svchost.exe",
-                     "aw-qt.exe", "HotkeyMonitor.exe"]
+        running_6 = [f"unsecapp{windows_extension}",
+                     f"NisSrv{windows_extension}", f"svchost{windows_extension}",
+                     f"aw-qt{windows_extension}", f"HotkeyMonitor{windows_extension}"]
         expected_6 = []
         running_mocks_6 = []
         for name in running_6:
