@@ -1,10 +1,7 @@
-# import logging
 from argparse import ArgumentParser, BooleanOptionalAction
 
 from src import angel
 
-# logger = logging.getLogger("main")
-# logger.setLevel(logging.INFO)
 
 def parse_args():
     parser = ArgumentParser(description="Shoulder Angel")

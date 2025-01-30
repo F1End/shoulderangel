@@ -32,7 +32,7 @@ class TestAngel(TestCase):
         test_path = "some/file/path"
         test_rule = "loop"
         test_interval = 15
-        argpars_mock.config_path =test_path
+        argpars_mock.config_path = test_path
         argpars_mock.run_rule = test_rule
         argpars_mock.check_interval = test_interval
         argpars_mock.debug = False
@@ -63,7 +63,7 @@ class TestAngel(TestCase):
         test_path = "some/file/path"
         test_rule = "loop"
         test_interval = 15
-        argpars_mock.config_path =test_path
+        argpars_mock.config_path = test_path
         argpars_mock.run_rule = test_rule
         argpars_mock.check_interval = test_interval
         argpars_mock.debug = True
@@ -86,8 +86,8 @@ class TestAngel(TestCase):
 
         logger_mock.setLevel.assert_called_with(logging.DEBUG)
         configs_mock.assert_called_with(test_path)
-        self.assertEqual(watcher_mock.call_count, 2)
-        self.assertEqual(alarm_mock.call_count, 2)
+        self.assertEqual(watcher_mock.call_count, 2)  # called already during Case 1
+        self.assertEqual(alarm_mock.call_count, 2)  # called already during Case 1
 
     def test_check_element(self):
         # Case 1: returns a single running progrem
@@ -127,7 +127,7 @@ class TestAngel(TestCase):
             mock_check_element.assert_any_call(checks[1])
             mock_check_element.assert_any_call(checks[2])
 
-            self.assertEqual(output,[])
+            self.assertEqual(output, [])
 
         # Case 2: One program is running
         with patch.object(self.test_angel, 'check_element') as mock_check_element:
@@ -236,7 +236,7 @@ class TestAngel(TestCase):
                 check_run_rules_mock.assert_called_once()
 
         # Case 2: Looping
-        expected_sleep_length = self.test_angel.check_interval * 60 # default is 5 * 60 -> 300
+        expected_sleep_length = self.test_angel.check_interval * 60  # default is 5 * 60 -> 300
         with patch.object(self.test_angel, 'check_and_action') as check_and_action_mock:
             with patch.object(self.test_angel, 'check_run_rules') as check_run_rules_mock:
                 # Modelling 5 reruns -> Run six times total
