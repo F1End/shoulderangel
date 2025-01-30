@@ -1,3 +1,4 @@
+import logging
 from unittest import TestCase, main
 from unittest.mock import patch, MagicMock, call
 
@@ -17,13 +18,16 @@ class TestAngel(TestCase):
         argpars_mock.config_path = test_path
         argpars_mock.run_rule = test_rule
         argpars_mock.check_interval = test_interval
+        argpars_mock.debug = False
 
         self.test_angel = angel.Angel(argpars_mock)
 
+    @patch('src.angel.logger')
     @patch('src.nudge.Alarm')
     @patch('src.watch.Watcher')
     @patch('src.config_parser.Configs')
-    def test_init(self, configs_mock, watcher_mock, alarm_mock):
+    def test_init(self, configs_mock, watcher_mock, alarm_mock, logger_mock):
+        # Case 1: Debug False (default)
         argpars_mock = MagicMock
         test_path = "some/file/path"
         test_rule = "loop"
@@ -31,6 +35,7 @@ class TestAngel(TestCase):
         argpars_mock.config_path =test_path
         argpars_mock.run_rule = test_rule
         argpars_mock.check_interval = test_interval
+        argpars_mock.debug = False
 
         configs_return = "fake_configs_instance"
         configs_mock.return_value = configs_return
@@ -48,9 +53,41 @@ class TestAngel(TestCase):
         self.assertEqual(init_test_angel.watcher, watcher_return)
         self.assertEqual(init_test_angel.alarm, alarm_return)
 
+        logger_mock.assert_not_called()
         configs_mock.assert_called_with(test_path)
         watcher_mock.assert_called_once()
         alarm_mock.assert_called_once()
+
+        # Case 2: Debug
+        argpars_mock = MagicMock
+        test_path = "some/file/path"
+        test_rule = "loop"
+        test_interval = 15
+        argpars_mock.config_path =test_path
+        argpars_mock.run_rule = test_rule
+        argpars_mock.check_interval = test_interval
+        argpars_mock.debug = True
+
+        configs_return = "fake_configs_instance"
+        configs_mock.return_value = configs_return
+        watcher_return = "fake_watcher_instance"
+        watcher_mock.return_value = watcher_return
+        alarm_return = "fake_alarm_instance"
+        alarm_mock.return_value = alarm_return
+
+        init_test_angel = angel.Angel(argpars_mock)
+
+        self.assertEqual(init_test_angel.config_path, test_path)
+        self.assertEqual(init_test_angel.run_rule, test_rule)
+        self.assertEqual(init_test_angel.check_interval, test_interval)
+        self.assertEqual(init_test_angel.configs, configs_return)
+        self.assertEqual(init_test_angel.watcher, watcher_return)
+        self.assertEqual(init_test_angel.alarm, alarm_return)
+
+        logger_mock.setLevel.assert_called_with(logging.DEBUG)
+        configs_mock.assert_called_with(test_path)
+        self.assertEqual(watcher_mock.call_count, 2)
+        self.assertEqual(alarm_mock.call_count, 2)
 
     def test_check_element(self):
         # Case 1: returns a single running progrem
@@ -61,7 +98,7 @@ class TestAngel(TestCase):
         self.test_angel.watcher.run_checks.assert_called_with(fake_element_1)
         self.assertEqual(results_1, program_running_1)
 
-        # Case 2: returns multuple running programs
+        # Case 2: returns multiple running programs
         fake_element_2 = "fake_config_element_2"
         program_running_2 = ["firefox", "Spotify"]
         self.test_angel.watcher.run_checks.return_value = program_running_2

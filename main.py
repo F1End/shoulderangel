@@ -1,7 +1,10 @@
-from argparse import ArgumentParser
+# import logging
+from argparse import ArgumentParser, BooleanOptionalAction
 
 from src import angel
 
+# logger = logging.getLogger("main")
+# logger.setLevel(logging.INFO)
 
 def parse_args():
     parser = ArgumentParser(description="Shoulder Angel")
@@ -14,6 +17,8 @@ def parse_args():
                              "'loop' -app will keep checking periodically\n")
     parser.add_argument("--check_interval", default=5,
                         help="Minutes between checks (applicable when looping)")
+    parser.add_argument("--debug", default=False, action=BooleanOptionalAction,
+                        help="Set logger level to debug")
 
     args = parser.parse_args()
 
