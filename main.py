@@ -13,13 +13,15 @@ def parse_args():
                              "'single' -app will quit after one check\n"
                              "'loop' -app will keep checking periodically\n")
     parser.add_argument("--check_interval", default=5,
+                        type=float,
                         help="Minutes between checks (applicable when looping)")
-    parser.add_argument("--debug", default=False, action=BooleanOptionalAction,
+    parser.add_argument("--debug", default=False,
+                        action=BooleanOptionalAction,
                         help="Set logger level to debug")
 
-    args = parser.parse_args()
+    arguments = parser.parse_args()
 
-    return args
+    return arguments
 
 
 if __name__ == "__main__":
