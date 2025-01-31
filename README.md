@@ -16,11 +16,11 @@ For example, if you want to prevent yourself from browsing at night, you can cre
       
    ![Alt text](/images/config_example_1.png)
    
-   3. You can create multiple sets, each will be evaluated automatically when the script runs
-   4. You can list single or multiple programs(simply comma delimited)
-   5. Please add start_time and end_time in form "hh:mm", including double brackets
-   6. Currently the only supported rule is nudge, as in the image. This will trigger a popup window with a message in case the progrems are found to be running between start and end times.
-   7. You can find further examples in tests/resources directory
+   2. You can create multiple sets, each will be evaluated automatically when the script runs
+   3. You can list single or multiple programs(simply comma delimited)
+   4. Please add start_time and end_time in form "hh:mm", including double brackets
+   5. Currently the only supported rule is nudge, as in the image. This will trigger a popup window with a message in case the progrems are found to be running between start and end times.
+   6. You can find further examples in tests/resources directory
 6. Create the command to run the script.
    1. The command will start with a reference to your python setup.
       1. If running from virtual environment, it would start as "./venv/Script/python.exe" or comparable
