@@ -1,5 +1,6 @@
 # shoulderangel
 This is a focusing app. Watches you(r computer) and nudges you if you do something that you should not, as if it were an angel.
+
 ![Alt text](/images/sa1.png)
 
 Following a set of configurations will create a popup window if the specified application(s) are running during the specified interval.
