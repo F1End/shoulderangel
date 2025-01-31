@@ -28,6 +28,7 @@ class TestAlarm(TestCase):
 
         tk_mock.assert_called_once()
         tk_instance.withdraw.assert_called_once()
+        tk_instance.withdraw.wm_attributes.assert_not_called()
         msgbox_mock.showinfo.assert_called_with(title, msg)
         tk_instance.destroy.assert_called_once()
 
@@ -43,8 +44,25 @@ class TestAlarm(TestCase):
 
         self.assertEqual(tk_mock.call_count, 2)  # as called once for Case 1
         tk_instance_2.withdraw.assert_called_once()
+        tk_instance_2.wm_attributes.assert_not_called()
         msgbox_mock.showinfo.assert_called_with(title, msg)
         tk_instance_2.destroy.assert_not_called()
+
+        # Case 3: Forcing window to pop to top level
+        tk_instance_3 = MagicMock()
+        tk_mock.return_value = tk_instance_3
+        title = "Some title for the msgbox"
+        msg = "Some message for the msgbox"
+        non_default_clenaup = False
+
+        alarm_instance = nudge.Alarm(non_default_clenaup)
+        alarm_instance.pop_msg(title, msg, move_to_top=True)
+
+        self.assertEqual(tk_mock.call_count, 3)  # as called already for Case 1 and 2
+        tk_instance_3.withdraw.assert_called_once()
+        tk_instance_3.wm_attributes.assert_called_with('-topmost', True)
+        msgbox_mock.showinfo.assert_called_with(title, msg)
+        tk_instance_3.destroy.assert_not_called()
 
     @patch('src.nudge.Alarm.pop_msg')
     def test_nudge(self, popmsg_mock):
@@ -58,7 +76,7 @@ class TestAlarm(TestCase):
                          f"""Are you sure this is the best use of your time?"""
         alarm1 = nudge.Alarm()
         alarm1.nudge(program, start_time, end_time)
-        popmsg_mock.assert_called_with(expected_title, expected_msg_1)
+        popmsg_mock.assert_called_with(expected_title, expected_msg_1, move_to_top=True)
 
         # Case 2: multiple programs
         program = ["firefox", "chrome", "edge"]
@@ -70,7 +88,7 @@ class TestAlarm(TestCase):
                          f"""Are you sure this is the best use of your time?"""
         alarm2 = nudge.Alarm()
         alarm2.nudge(program, start_time, end_time)
-        popmsg_mock.assert_called_with(expected_title, expected_msg_2)
+        popmsg_mock.assert_called_with(expected_title, expected_msg_2, move_to_top=True)
 
 
 if __name__ == '__main__':

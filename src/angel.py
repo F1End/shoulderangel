@@ -27,7 +27,7 @@ class Angel:
         self.check_interval = args.check_interval
         self.debug = args.debug
 
-        self.alarm = nudge.Alarm()
+        self.alarm = nudge.Alarm(cleanup=False)
         self.watcher = watch.Watcher()
         self.configs = config_parser.Configs(self.config_path)
 
