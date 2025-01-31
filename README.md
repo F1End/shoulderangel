@@ -13,13 +13,15 @@ For example, if you want to prevent yourself from browsing at night, you can cre
 3. Install dependencies.
 4. Create config file.
    1. A simple base config is available in config directory as config.yaml
+      
    ![Alt text](/images/config_example_1.png)
-   2. You can create multiple sets, each will be evaluated automatically when the script runs
-   3. You can list single or multiple programs(simply comma delimited)
-   4. Please add start_time and end_time in form "hh:mm", including double brackets
-   5. Currently the only supported rule is nudge, as in the image. This will trigger a popup window with a message in case the progrems are found to be running between start and end times.
-   6. You can find further examples in tests/resources directory
-5. Create the command to run the script.
+   
+   3. You can create multiple sets, each will be evaluated automatically when the script runs
+   4. You can list single or multiple programs(simply comma delimited)
+   5. Please add start_time and end_time in form "hh:mm", including double brackets
+   6. Currently the only supported rule is nudge, as in the image. This will trigger a popup window with a message in case the progrems are found to be running between start and end times.
+   7. You can find further examples in tests/resources directory
+6. Create the command to run the script.
    1. The command will start with a reference to your python setup.
       1. If running from virtual environment, it would start as "./venv/Script/python.exe" or comparable
       2. If python is added to your path, simply "python" should work
@@ -32,7 +34,7 @@ For example, if you want to prevent yourself from browsing at night, you can cre
       1. \venv\Scripts\python.exe main.py
       2. D:\PythonProjects\shoulderangel\venv\Scripts\python.exe D:\PythonProjects\shoulderangel\main.py --run_rule loop --config_path C:\Users\JohnDoe\myconfig.yaml
       3. python D:\PythonProjects\shoulderangel\main.py --run_rule loop --config_path --check_interval 2.5
-6. Run the script by
+7. Run the script by
    1. Using cmd or powershell line from venv:
    https://www.geeksforgeeks.org/how-to-use-cmd-for-python-in-windows-10/
    2. Using task scheduler:https://www.windowscentral.com/how-create-automated-task-using-task-scheduler-windows-10
